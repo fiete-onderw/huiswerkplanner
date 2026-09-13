@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EFF3F1">
+<title>Huiswerk</title>
+<style>
+:root{
+  --ink:#16202A; --muted:#5B6B73; --line:#DDE3E0; --bg:#EFF3F1; --card:#FFFFFF;
+  --accent:#0F6E56; --accent-soft:#E1F0EA; --warn:#8A5A10; --warn-soft:#FAEEDA;
+  --danger:#9E362B; --danger-soft:#FAE9E6; --radius:10px;
+  --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --ink:#E8EDEA; --muted:#9AA8A4; --line:#2C3A38; --bg:#12191A; --card:#1A2324;
+    --accent:#5DCAA5; --accent-soft:#123A30; --warn:#E0A854; --warn-soft:#3A2B10;
+    --danger:#E58A7C; --danger-soft:#3A1E1A; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;padding-bottom:76px}
+body.uit{padding-bottom:0}
+button{font:inherit;color:inherit;cursor:pointer}
+h1{font-size:19px;font-weight:600;margin:0}
+h2{font-size:13px;font-weight:600;margin:0 0 8px;color:var(--muted)}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;
+  display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+header .st{font-size:12px;color:var(--muted)}
+section{padding:16px 0 4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:11px 12px;margin-bottom:8px;
+  display:flex;gap:11px;align-items:flex-start}
+.card.late{border-color:var(--danger);background:var(--danger-soft)}
+.card.start{border-color:var(--warn);background:var(--warn-soft)}
+.card.gewerkt{opacity:.6}
+.card.gewerkt .title{text-decoration:line-through;text-decoration-color:var(--muted)}
+.done .title{text-decoration:line-through;color:var(--muted)}
+.check{width:21px;height:21px;min-width:21px;border:1.5px solid var(--muted);border-radius:6px;background:none;
+  margin-top:2px;padding:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent}
+.check.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.body{flex:1;min-width:0}
+.title{font-size:15px;line-height:1.35;cursor:pointer}
+.meta{font-size:12.5px;color:var(--muted);margin-top:2px}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--accent-soft);
+  color:var(--accent);margin-right:5px;vertical-align:1px}
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font-size:16px;margin-bottom:6px;font-weight:600}
+.empty p{font-size:14px;margin:0 0 16px}
+.btn{background:var(--ink);color:var(--bg);border:none;padding:10px 16px;border-radius:var(--radius);font-size:14.5px;font-weight:500}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 11px;font-size:13px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13.5px}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.fab{position:fixed;right:max(16px,calc(50vw - 264px));bottom:88px;width:54px;height:54px;border-radius:50%;
+  background:var(--accent);color:#fff;border:none;font-size:28px;line-height:1;z-index:6;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);
+  display:flex;z-index:7;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:none;border:none;padding:11px 4px 13px;font-size:11.5px;color:var(--muted);display:flex;
+  flex-direction:column;align-items:center;gap:3px}
+nav button span{font-size:19px;line-height:1}
+nav button.on{color:var(--accent)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:14px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:7px 2px 8px;text-align:center}
+.day.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.day .dw{font-size:10.5px;color:var(--muted)}
+.day.on .dw{color:var(--bg);opacity:.75}
+.day .dn{font-size:15px;font-weight:600;margin-top:1px}
+.dots{display:flex;gap:2px;justify-content:center;height:6px;margin-top:5px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--muted);opacity:.45}
+.dot.h{background:var(--danger);opacity:1}
+.day.on .dot{background:var(--bg);opacity:.6}
+.day.today .dn{color:var(--accent)}
+.day.on.today .dn{color:var(--bg)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+.sheet h3{margin:0 0 14px;font-size:17px;font-weight:600}
+label{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 6px;font-weight:500}
+input[type=text],input[type=email],input[type=password],input[type=date],input[type=number]{width:100%;padding:10px 11px;
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--card);color:var(--ink);font:inherit;font-size:15px}
+.row{display:flex;gap:8px;margin-top:18px}
+.row .btn{flex:1;text-align:center}
+.hint{background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius);padding:11px 12px;
+  font-size:13.5px;margin-bottom:10px}
+.hint .row{margin-top:10px}
+.line{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:10px 12px;margin-bottom:7px;font-size:14.5px}
+.line small{display:block;color:var(--muted);font-size:12.5px}
+.del{background:none;border:none;color:var(--muted);font-size:17px;padding:4px 6px}
+.melding{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:30;background:var(--ink);color:var(--bg);
+  padding:9px 15px;border-radius:999px;font-size:13.5px;max-width:90vw}
+.melding.fout{background:var(--danger);color:#fff}
+.login{max-width:360px;margin:0 auto;padding:14vh 16px 40px}
+.login h1{font-size:24px;margin-bottom:6px}
+.login p.sub{color:var(--muted);font-size:14px;margin:0 0 22px}
+.foutregel{color:var(--danger);font-size:13.5px;margin-top:12px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body class="uit">
+
+<div id="app"></div>
+<div id="modal"></div>
+<div id="meldingen"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://srfigofpluibrrgcefuq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Cuul5X8z-ffe0bkfg8agIQ_hIOw4ty2';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ---------- datum ---------- */
+const iso = d => { const x=new Date(d); x.setHours(12,0,0,0); return x.toISOString().slice(0,10); };
+let today = iso(new Date());
+const addDays = (s,n) => { const d=new Date(s+'T12:00'); d.setDate(d.getDate()+n); return iso(d); };
+const diffDays = (a,b) => Math.round((new Date(b+'T12:00')-new Date(a+'T12:00'))/864e5);
+const DW=['zo','ma','di','wo','do','vr','za'];
+const dowName = s => DW[new Date(s+'T12:00').getDay()];
+const dm = s => new Date(s+'T12:00').getDate()+'/'+(new Date(s+'T12:00').getMonth()+1);
+const fmt = s => { const d=diffDays(today,s);
+  if(d===0) return 'vandaag'; if(d===1) return 'morgen'; if(d===-1) return 'gisteren';
+  if(d<0) return Math.abs(d)+' dagen te laat';
+  if(d<7) return dowName(s)+' (over '+d+' dagen)';
+  return dowName(s)+' '+dm(s); };
+const ZW = {licht:1, gemiddeld:2, zwaar:3};
+
+/* ---------- staat ---------- */
+let db = {vakken:[], sjablonen:[], opdrachten:[]};
+let tab='start', agView='week', selDay=today, weekStart=null, dismissed={}, flash='', bezig=false;
+let sessie = null;
+
+const vak = id => (db.vakken.find(v=>v.id===id)||{}).naam || 'zonder vak';
+const sjab = id => db.sjablonen.find(s=>s.id===id) || {naam:'zonder soort',zwaarte:'gemiddeld',buffer:0};
+const startDag = o => addDays(o.deadline, -sjab(o.sj).buffer);
+const open = () => db.opdrachten.filter(o=>!o.af);
+const monday = d => { const x=new Date(d+'T12:00'); const k=(x.getDay()+6)%7; x.setDate(x.getDate()-k); return iso(x); };
+const weekDays = () => { const s = weekStart || monday(today); return [0,1,2,3,4,5,6].map(i=>addDays(s,i)); };
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- meldingen ---------- */
+function meld(tekst, fout){
+  const el=document.createElement('div'); el.className='melding'+(fout?' fout':''); el.textContent=tekst;
+  document.getElementById('meldingen').appendChild(el);
+  setTimeout(()=>el.remove(), fout?5000:2200);
+}
+async function q(builder){ const {data,error} = await builder; if(error) throw error; return data; }
+async function actie(fn){
+  if(bezig) return; bezig=true;
+  try{ await fn(); }
+  catch(e){ meld(e && e.message ? e.message : 'Opslaan mislukt', true); }
+  finally{ bezig=false; }
+}
+
+/* ---------- laden ---------- */
+async function laden(){
+  const [vakken, sjablonen, opdrachten, dagen] = await Promise.all([
+    q(sb.from('vakken').select('id,naam').order('naam')),
+    q(sb.from('sjablonen').select('id,naam,zwaarte,buffer').order('naam')),
+    q(sb.from('opdrachten').select('id,titel,vak_id,sjabloon_id,deadline,af').order('deadline')),
+    q(sb.from('opdracht_dagen').select('opdracht_id,dag,gewerkt'))
+  ]);
+  db.vakken = vakken;
+  db.sjablonen = sjablonen;
+  db.opdrachten = opdrachten.map(o=>({
+    id:o.id, titel:o.titel, vak:o.vak_id, sj:o.sjabloon_id, deadline:o.deadline, af:o.af,
+    gepland: dagen.filter(d=>d.opdracht_id===o.id).map(d=>d.dag).sort(),
+    gewerkt: dagen.filter(d=>d.opdracht_id===o.id && d.gewerkt).map(d=>d.dag).sort()
+  }));
+}
+async function herladen(stil){
+  try{ await laden(); render(); if(!stil) meld('Bijgewerkt'); }
+  catch(e){ meld('Kon gegevens niet ophalen', true); }
+}
+
+/* ---------- kaarten ---------- */
+function kaart(o, ctx){
+  const s = sjab(o.sj);
+  const dagCtx = (tab==='agenda') ? selDay : today;
+  const laat = !o.af && diffDays(today,o.deadline)<0;
+  const moetStarten = !o.af && !laat && diffDays(today,startDag(o))<=0 && !o.gepland.includes(today);
+  const isGewerkt = !o.af && o.gewerkt.includes(dagCtx);
+  let extra='';
+  if(laat) extra=' · '+fmt(o.deadline);
+  else if(moetStarten) extra=' · had je al moeten beginnen';
+  return `<div class="card ${laat?'late':''} ${moetStarten?'start':''} ${o.af?'done':''} ${isGewerkt&&ctx==='dag'?'gewerkt':''}">
+    <button class="check ${o.af?'on':''}" onclick="vink('${o.id}')" aria-label="Afronden">✓</button>
+    <div class="body">
+      <div class="title" onclick="opdrachtSheet('${o.id}')">${esc(o.titel)}</div>
+      <div class="meta"><span class="tag">${esc(s.naam)}</span>${esc(vak(o.vak))} · af ${fmt(o.deadline)}${extra}</div>
+    </div>
+    ${ctx==='plan' ? `<button class="btn ghost sm" onclick="planOp('${o.id}','${selDay}')">Plan</button>` : ''}
+    ${ctx==='dag' ? `<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">
+        <button class="chip" style="font-size:12px;padding:4px 10px${isGewerkt?';background:var(--ink);color:var(--bg);border-color:var(--ink)':''}"
+          onclick="gewerktWissel('${o.id}','${dagCtx}')">${isGewerkt?'✓ gewerkt':'gewerkt?'}</button>
+        <button class="del" style="font-size:14px;padding:0 4px" onclick="haalUit('${o.id}','${dagCtx}')" aria-label="Van dag halen">×</button>
+      </div>` : ''}
+  </div>`;
+}
+const blok = (titel, lijst, ctx) => lijst.length ? `<section><h2>${titel}</h2>${lijst.map(o=>kaart(o,ctx)).join('')}</section>` : '';
+
+/* ---------- schermen ---------- */
+function renderStart(){
+  if(!db.vakken.length || !db.sjablonen.length) return leegStart();
+  const o = open();
+  const laat = o.filter(x=>diffDays(today,x.deadline)<0);
+  const gisteren = o.filter(x=>!laat.includes(x) && !x.gepland.includes(today) && x.gepland.some(d=>d<today && !x.gewerkt.includes(d)));
+  const vandaag = o.filter(x=>x.gepland.includes(today) && !laat.includes(x))
+    .sort((a,b)=>(a.gewerkt.includes(today)?1:0)-(b.gewerkt.includes(today)?1:0));
+  const beginnen = o.filter(x=>!laat.includes(x)&&!vandaag.includes(x)&&!gisteren.includes(x)&&diffDays(today,startDag(x))<=0);
+  const rest = o.filter(x=>![...laat,...gisteren,...vandaag,...beginnen].includes(x) && diffDays(today,x.deadline)<=7);
+  if(!o.length) return `<div class="empty"><strong>Niets openstaand</strong><p>Voeg een opdracht toe met de plusknop.</p></div>`;
+  return blok('Te laat',laat,'') + blok('Van gisteren blijven staan',gisteren,'') +
+    blok('Vandaag gepland',vandaag,'dag') + blok('Tijd om te beginnen',beginnen,'') + blok('Deze week',rest,'');
+}
+
+function renderAgenda(){
+  if(!db.vakken.length || !db.sjablonen.length) return leegStart();
+  let h = `<section><div class="chips" style="margin-bottom:14px">
+    <button class="chip ${agView==='week'?'on':''}" onclick="setView('week')">Week</button>
+    <button class="chip ${agView==='dag'?'on':''}" onclick="setView('dag')">Dag</button></div>`;
+  if(agView==='week'){
+    const ds = weekDays();
+    h += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button class="btn ghost sm" onclick="schuif(-7)">‹ vorige</button>
+      <span style="font-size:13px;color:var(--muted)">${dm(ds[0])} – ${dm(ds[6])}</span>
+      <button class="btn ghost sm" onclick="schuif(7)">volgende ›</button></div>`;
+    h += '<div class="week">' + ds.map(d=>{
+      const opDag = open().filter(o=>o.gepland.includes(d));
+      const dl = open().filter(o=>o.deadline===d);
+      const dots = [...new Set([...opDag,...dl])].slice(0,4);
+      return `<button class="day ${d===selDay?'on':''} ${d===today?'today':''}" onclick="kiesDag('${d}')">
+        <div class="dw">${dowName(d)}</div><div class="dn">${new Date(d+'T12:00').getDate()}</div>
+        <div class="dots">${dots.map(o=>`<span class="dot ${sjab(o.sj).zwaarte==='zwaar'?'h':''}"></span>`).join('')}</div></button>`;
+    }).join('') + '</div>' + weekLast(ds);
+  }
+  h += `</section>`;
+  const geplandDag = open().filter(o=>o.gepland.includes(selDay))
+    .sort((a,b)=>(a.gewerkt.includes(selDay)?1:0)-(b.gewerkt.includes(selDay)?1:0));
+  h += `<section><h2>${selDay===today?'Vandaag':dowName(selDay)+' '+dm(selDay)}</h2>`;
+  h += geplandDag.length ? geplandDag.map(o=>kaart(o,'dag')).join('')
+    : `<p style="font-size:14px;color:var(--muted);margin:0 0 8px">Nog niets ingepland op deze dag.</p>`;
+  h += `</section>`;
+  const nietGepland = open().filter(o=>!o.gepland.includes(selDay));
+  if(nietGepland.length) h += blok('Nog toe te voegen aan deze dag', nietGepland.slice(0,8), 'plan');
+  return h;
+}
+
+function weekLast(ds){
+  const inWeek = open().filter(o=>ds.includes(o.deadline));
+  if(!inWeek.length) return `<div style="font-size:13px;color:var(--muted);margin-bottom:14px">Geen deadlines deze week.</div>`;
+  const zwaar = inWeek.filter(o=>sjab(o.sj).zwaarte==='zwaar').length;
+  const score = inWeek.reduce((a,o)=>a+ZW[sjab(o.sj).zwaarte],0);
+  const druk = score>=8;
+  return `<div style="font-size:13px;color:${druk?'var(--danger)':'var(--muted)'};margin-bottom:14px">
+    ${inWeek.length} deadline${inWeek.length>1?'s':''} deze week${zwaar?', waarvan '+zwaar+' zwaar':''}${druk?' — dit wordt een volle week':''}.</div>`;
+}
+
+function renderBeheer(){
+  let h = advies();
+  h += `<section><h2>Vakken</h2>`;
+  h += db.vakken.map(v=>`<div class="line"><span>${esc(v.naam)}</span>
+    <button class="del" onclick="vakForm('${v.id}')" aria-label="Bewerken">✎</button></div>`).join('')
+    || `<p style="font-size:14px;color:var(--muted);margin:0 0 8px">Nog geen vakken.</p>`;
+  h += `<button class="btn ghost sm" style="margin-top:6px" onclick="vakForm()">Vak toevoegen</button></section>`;
+  h += `<section><h2>Sjablonen</h2>`;
+  h += db.sjablonen.map(s=>`<div class="line"><span>${esc(s.naam)}<small>${s.zwaarte} · begin ${s.buffer} dagen van tevoren</small></span>
+    <button class="del" onclick="sjForm('${s.id}')" aria-label="Bewerken">✎</button></div>`).join('')
+    || `<p style="font-size:14px;color:var(--muted);margin:0 0 8px">Nog geen sjablonen.</p>`;
+  h += `<button class="btn ghost sm" style="margin-top:6px" onclick="sjForm()">Sjabloon toevoegen</button></section>`;
+  const af = db.opdrachten.filter(o=>o.af).slice(0,25);
+  h += `<section><h2>Afgerond</h2>`;
+  h += af.length ? af.map(o=>`<div class="line"><span>${esc(o.titel)}<small>${esc(sjab(o.sj).naam)} · gewerkt op ${o.gewerkt.length} dag${o.gewerkt.length===1?'':'en'}</small></span>
+    <button class="del" onclick="vink('${o.id}')" aria-label="Terugzetten">↺</button></div>`).join('')
+    : `<p style="font-size:14px;color:var(--muted);margin:0">Nog niets afgerond.</p>`;
+  h += `</section><section><h2>Account</h2>
+    <div class="line"><span>${esc(sessie ? sessie.user.email : '')}<small>ingelogd</small></span>
+    <button class="btn ghost sm" onclick="uitloggen()">Uitloggen</button></div>
+    <button class="btn ghost sm" style="margin-top:6px" onclick="herladen()">Gegevens verversen</button></section>`;
+  return h;
+}
+
+function advies(){
+  let h='';
+  db.sjablonen.forEach(s=>{
+    if(dismissed[s.id]) return;
+    const af = db.opdrachten.filter(o=>o.af && o.sj===s.id && o.gewerkt.length>0);
+    if(af.length<3) return;
+    const gem = Math.round(af.reduce((a,o)=>a+o.gewerkt.length,0)/af.length);
+    if(gem<=s.buffer) return;
+    h += `<div class="hint">Je werkt gemiddeld op ${gem} verschillende dagen aan een ${esc(s.naam.toLowerCase())}. De buffer staat nu op ${s.buffer} dagen.
+      <div class="row"><button class="btn sm" onclick="zetBuffer('${s.id}',${gem})">Zet op ${gem} dagen</button>
+      <button class="btn ghost sm" onclick="negeer('${s.id}')">Laat staan</button></div></div>`;
+  });
+  return h;
+}
+
+function leegStart(){
+  if(!db.vakken.length) return `<div class="empty"><strong>Begin met je vakken</strong>
+    <p>Voeg de vakken toe die je dit blok volgt. Daarna maak je sjablonen voor de soorten opdrachten die je hebt.</p>
+    <button class="btn" onclick="vakForm()">Vak toevoegen</button></div>`;
+  return `<div class="empty"><strong>Maak je eerste sjabloon</strong>
+    <p>Een sjabloon is een soort opdracht — samenvatting, lesvoorbereiding, portfoliostuk. Daarin leg je de zwaarte vast en hoeveel dagen van tevoren je moet beginnen.</p>
+    <button class="btn" onclick="sjForm()">Sjabloon toevoegen</button></div>`;
+}
+
+/* ---------- acties ---------- */
+function vink(id){ actie(async ()=>{
+  const o = db.opdrachten.find(x=>x.id===id); const nu = !o.af;
+  await q(sb.from('opdrachten').update({af:nu, afgerond_op: nu ? new Date().toISOString() : null}).eq('id',id));
+  if(nu && !o.gewerkt.includes(today)){
+    await q(sb.from('opdracht_dagen').upsert({opdracht_id:id, dag:today, gewerkt:true},{onConflict:'opdracht_id,dag'}));
+    if(!o.gepland.includes(today)) o.gepland.push(today);
+    o.gewerkt.push(today);
+  }
+  o.af = nu; render();
+}); }
+
+function planOp(id,d){ actie(async ()=>{
+  const o = db.opdrachten.find(x=>x.id===id);
+  if(!o.gepland.includes(d)){
+    await q(sb.from('opdracht_dagen').upsert({opdracht_id:id, dag:d, gewerkt:false},{onConflict:'opdracht_id,dag'}));
+    o.gepland.push(d); o.gepland.sort();
+  }
+  render();
+}); }
+
+function haalUit(id,d){ actie(async ()=>{
+  await q(sb.from('opdracht_dagen').delete().eq('opdracht_id',id).eq('dag',d));
+  const o = db.opdrachten.find(x=>x.id===id);
+  o.gepland = o.gepland.filter(x=>x!==d); o.gewerkt = o.gewerkt.filter(x=>x!==d);
+  render();
+}); }
+
+function gewerktWissel(id,d){ actie(async ()=>{
+  const o = db.opdrachten.find(x=>x.id===id); const nu = !o.gewerkt.includes(d);
+  await q(sb.from('opdracht_dagen').upsert({opdracht_id:id, dag:d, gewerkt:nu},{onConflict:'opdracht_id,dag'}));
+  o.gewerkt = nu ? [...o.gewerkt,d].sort() : o.gewerkt.filter(x=>x!==d);
+  if(!o.gepland.includes(d)){ o.gepland.push(d); o.gepland.sort(); }
+  render(); if(document.querySelector('.sheet')) opdrachtSheet(id);
+}); }
+
+function kiesDag(d){ selDay=d; render(); }
+function setView(v){ agView=v; if(v==='dag') selDay=today; render(); }
+function schuif(n){ weekStart = addDays(weekStart||monday(today), n); render(); }
+function negeer(id){ dismissed[id]=1; render(); }
+function zetBuffer(id,n){ actie(async ()=>{
+  await q(sb.from('sjablonen').update({buffer:n}).eq('id',id));
+  db.sjablonen.find(s=>s.id===id).buffer = n; render();
+}); }
+
+/* ---------- detailscherm ---------- */
+function opdrachtSheet(id){
+  const o = db.opdrachten.find(x=>x.id===id); if(!o) return;
+  const s2 = sjab(o.sj), dagen = [...new Set([...o.gepland, ...o.gewerkt])].sort();
+  const dTot = diffDays(today,o.deadline);
+  let h = flash ? `<div class="hint" style="margin-bottom:14px">${esc(flash)}</div>` : ''; flash='';
+  h += `<h3>${esc(o.titel)}</h3>
+    <div class="line" style="display:block"><small>Vak</small>${esc(vak(o.vak))}</div>
+    <div class="line" style="display:block"><small>Soort</small>${esc(s2.naam)} · ${s2.zwaarte}</div>
+    <div class="line" style="display:block"><small>Klaar op</small>${dowName(o.deadline)} ${dm(o.deadline)} — ${fmt(o.deadline)}</div>
+    <div class="line" style="display:block"><small>Beginnen vanaf</small>${fmt(startDag(o))} (${s2.buffer} dagen van tevoren)</div>
+    <div class="line" style="display:block"><small>Status</small>${o.af?'Afgerond':(dTot<0?'Te laat':'Nog open')} · gewerkt op ${o.gewerkt.length} van ${dagen.length} ingeplande dag${dagen.length===1?'':'en'}</div>
+    <label>Werkgeschiedenis</label>
+    <div class="chips">${dagen.map(d=>`
+      <span class="chip ${o.gewerkt.includes(d)?'on':''}" style="padding:4px 6px 4px 11px;font-size:12.5px;display:inline-flex;gap:6px;align-items:center">
+        <button style="background:none;border:none;padding:0;font:inherit;color:inherit" onclick="gewerktWissel('${o.id}','${d}')">${o.gewerkt.includes(d)?'✓ ':''}${dowName(d)} ${dm(d)}</button>
+        <button style="background:none;border:none;padding:0 3px;font:inherit;color:inherit;opacity:.6" onclick="histWeg('${o.id}','${d}')" aria-label="Dag verwijderen">×</button>
+      </span>`).join('') || '<span style="font-size:13px;color:var(--muted)">Nog geen dagen vastgelegd.</span>'}</div>
+    <label for="add-dag">Dag toevoegen als gewerkt</label>
+    <input type="date" id="add-dag" onchange="histErbij('${o.id}',this.value)">
+    <div class="row"><button class="btn ghost" onclick="sluit()">Sluiten</button>
+      <button class="btn" onclick="opdrachtForm('${o.id}')">Wijzig opdracht</button></div>`;
+  sheet(h);
+}
+function histWeg(id,d){ actie(async ()=>{
+  await q(sb.from('opdracht_dagen').delete().eq('opdracht_id',id).eq('dag',d));
+  const o = db.opdrachten.find(x=>x.id===id);
+  o.gepland = o.gepland.filter(x=>x!==d); o.gewerkt = o.gewerkt.filter(x=>x!==d);
+  render(); opdrachtSheet(id);
+}); }
+function histErbij(id,d){ if(!d) return; actie(async ()=>{
+  await q(sb.from('opdracht_dagen').upsert({opdracht_id:id, dag:d, gewerkt:true},{onConflict:'opdracht_id,dag'}));
+  const o = db.opdrachten.find(x=>x.id===id);
+  if(!o.gepland.includes(d)){ o.gepland.push(d); o.gepland.sort(); }
+  if(!o.gewerkt.includes(d)){ o.gewerkt.push(d); o.gewerkt.sort(); }
+  render(); opdrachtSheet(id);
+}); }
+
+/* ---------- formulieren ---------- */
+const M = () => document.getElementById('modal');
+function sluit(){ M().innerHTML=''; }
+function sheet(html){ M().innerHTML = `<div class="overlay" onclick="if(event.target===this)sluit()"><div class="sheet">${html}</div></div>`; }
+function pick(el,groep){ document.querySelectorAll('#'+groep+' .chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); }
+function gekozen(groep){ const el=document.querySelector('#'+groep+' .chip.on'); return el ? el.dataset : null; }
+const komende = dow => { for(let i=1;i<=7;i++){ const d=addDays(today,i); if(new Date(d+'T12:00').getDay()===dow) return d; } return addDays(today,7); };
+
+function vakForm(id){
+  const v = id ? db.vakken.find(x=>x.id===id) : {naam:''};
+  sheet(`<h3>${id?'Vak bewerken':'Nieuw vak'}</h3><label for="vn">Naam</label>
+    <input type="text" id="vn" value="${esc(v.naam)}" placeholder="Rekendidactiek" maxlength="60">
+    <div class="row">${id?`<button class="btn ghost" onclick="vakWeg('${id}')">Verwijderen</button>`
+      :`<button class="btn ghost" onclick="sluit()">Annuleren</button>`}
+      <button class="btn" onclick="vakOpslaan('${id||''}')">Opslaan</button></div>`);
+  document.getElementById('vn').focus();
+}
+function vakOpslaan(id){ const n=document.getElementById('vn').value.trim(); if(!n) return;
+  actie(async ()=>{
+    if(id){ await q(sb.from('vakken').update({naam:n}).eq('id',id)); db.vakken.find(v=>v.id===id).naam=n; }
+    else { const r = await q(sb.from('vakken').insert({naam:n}).select().single()); db.vakken.push({id:r.id,naam:r.naam}); }
+    db.vakken.sort((a,b)=>a.naam.localeCompare(b.naam)); sluit(); render();
+  });
+}
+function vakWeg(id){ actie(async ()=>{
+  await q(sb.from('vakken').delete().eq('id',id));
+  db.vakken = db.vakken.filter(v=>v.id!==id);
+  db.opdrachten.forEach(o=>{ if(o.vak===id) o.vak=null; });
+  sluit(); render();
+}); }
+
+function sjForm(id){
+  const s = id ? db.sjablonen.find(x=>x.id===id) : {naam:'',zwaarte:'gemiddeld',buffer:3};
+  sheet(`<h3>${id?'Sjabloon bewerken':'Nieuw sjabloon'}</h3>
+    <label for="sn">Naam</label><input type="text" id="sn" value="${esc(s.naam)}" placeholder="Samenvatting" maxlength="60">
+    <label>Zwaarte</label><div class="chips" id="zw">
+      ${['licht','gemiddeld','zwaar'].map(z=>`<button class="chip ${s.zwaarte===z?'on':''}" data-z="${z}" onclick="pick(this,'zw')">${z}</button>`).join('')}</div>
+    <label for="sbuf">Begin hoeveel dagen voor de deadline</label><input type="number" id="sbuf" min="0" max="365" value="${s.buffer}">
+    <div class="row">${id?`<button class="btn ghost" onclick="sjWeg('${id}')">Verwijderen</button>`
+      :`<button class="btn ghost" onclick="sluit()">Annuleren</button>`}
+      <button class="btn" onclick="sjOpslaan('${id||''}')">Opslaan</button></div>`);
+  document.getElementById('sn').focus();
+}
+function sjOpslaan(id){
+  const n=document.getElementById('sn').value.trim(); if(!n) return;
+  const z=(gekozen('zw')||{z:'gemiddeld'}).z;
+  let b=parseInt(document.getElementById('sbuf').value,10); if(isNaN(b)||b<0) b=0; if(b>365) b=365;
+  actie(async ()=>{
+    if(id){ await q(sb.from('sjablonen').update({naam:n,zwaarte:z,buffer:b}).eq('id',id));
+      Object.assign(db.sjablonen.find(s=>s.id===id),{naam:n,zwaarte:z,buffer:b}); }
+    else { const r = await q(sb.from('sjablonen').insert({naam:n,zwaarte:z,buffer:b}).select().single());
+      db.sjablonen.push({id:r.id,naam:r.naam,zwaarte:r.zwaarte,buffer:r.buffer}); }
+    db.sjablonen.sort((a,b2)=>a.naam.localeCompare(b2.naam)); sluit(); render();
+  });
+}
+function sjWeg(id){ actie(async ()=>{
+  await q(sb.from('sjablonen').delete().eq('id',id));
+  db.sjablonen = db.sjablonen.filter(s=>s.id!==id);
+  db.opdrachten.forEach(o=>{ if(o.sj===id) o.sj=null; });
+  sluit(); render();
+}); }
+
+function opdrachtForm(id){
+  if(!db.vakken.length){ vakForm(); return; }
+  if(!db.sjablonen.length){ sjForm(); return; }
+  const o = id ? db.opdrachten.find(x=>x.id===id) : null;
+  const dagen = [['Vandaag',today],['Morgen',addDays(today,1)],['Vrijdag',komende(5)],['Volgende week',addDays(today,7)]];
+  const mi = o ? dagen.findIndex(d=>d[1]===o.deadline) : 1;
+  const eigenAan = !!o && mi===-1;
+  sheet(`<h3>${o?'Opdracht wijzigen':'Nieuwe opdracht'}</h3>
+    <label for="ot">Wat moet je doen</label><input type="text" id="ot" value="${o?esc(o.titel):''}" placeholder="Samenvatting hoofdstuk 4" maxlength="200">
+    <label>Soort</label><div class="chips" id="sj">${db.sjablonen.map((x,i)=>`<button class="chip ${(o?x.id===o.sj:i===0)?'on':''}" data-id="${x.id}" onclick="pick(this,'sj')">${esc(x.naam)}</button>`).join('')}</div>
+    <label>Vak</label><div class="chips" id="vk">${db.vakken.map((v,i)=>`<button class="chip ${(o?v.id===o.vak:i===0)?'on':''}" data-id="${v.id}" onclick="pick(this,'vk')">${esc(v.naam)}</button>`).join('')}</div>
+    <label>Wanneer af</label><div class="chips" id="dl">${dagen.map(([l,d],i)=>`<button class="chip ${(o?i===mi:i===1)?'on':''}" data-d="${d}" onclick="pick(this,'dl')">${l}</button>`).join('')}
+      <button class="chip ${eigenAan?'on':''}" onclick="toonEigen(this)">Andere datum</button></div>
+    <input type="date" id="eigen" style="display:${eigenAan?'block':'none'};margin-top:8px" value="${o?o.deadline:addDays(today,1)}">
+    <div class="row">${o?`<button class="btn ghost" onclick="opdrachtWeg('${o.id}')">Verwijderen</button>`
+      :`<button class="btn ghost" onclick="sluit()">Annuleren</button>`}
+      <button class="btn" onclick="opdrachtOpslaan('${id||''}')">Opdracht opslaan</button></div>`);
+  document.getElementById('ot').focus();
+}
+function toonEigen(el){ document.getElementById('eigen').style.display='block'; pick(el,'dl'); }
+function opdrachtOpslaan(id){
+  const t=document.getElementById('ot').value.trim(); if(!t){ meld('Geef de opdracht een titel', true); return; }
+  const eigen=document.getElementById('eigen');
+  const dl = eigen.style.display==='block' ? eigen.value : (gekozen('dl')||{d:addDays(today,1)}).d;
+  if(!dl){ meld('Kies een datum', true); return; }
+  const rij = {titel:t, vak_id:(gekozen('vk')||{}).id||null, sjabloon_id:(gekozen('sj')||{}).id||null, deadline:dl};
+  actie(async ()=>{
+    if(id){
+      await q(sb.from('opdrachten').update(rij).eq('id',id));
+      Object.assign(db.opdrachten.find(o=>o.id===id), {titel:t, vak:rij.vak_id, sj:rij.sjabloon_id, deadline:dl});
+      flash='Opdracht gewijzigd.'; render(); opdrachtSheet(id);
+    } else {
+      const r = await q(sb.from('opdrachten').insert(rij).select().single());
+      db.opdrachten.push({id:r.id,titel:r.titel,vak:r.vak_id,sj:r.sjabloon_id,deadline:r.deadline,af:false,gepland:[],gewerkt:[]});
+      sluit(); render();
+    }
+  });
+}
+function opdrachtWeg(id){ actie(async ()=>{
+  await q(sb.from('opdrachten').delete().eq('id',id));
+  db.opdrachten = db.opdrachten.filter(o=>o.id!==id); sluit(); render();
+}); }
+
+/* ---------- inloggen ---------- */
+function loginScherm(fout, modus){
+  document.body.className='uit';
+  document.getElementById('app').innerHTML = `<div class="login">
+    <h1>Huiswerk</h1><p class="sub">Log in om je huiswerk op al je apparaten te zien.</p>
+    <label for="em">E-mailadres</label><input type="email" id="em" autocomplete="email" inputmode="email">
+    <label for="pw">Wachtwoord</label><input type="password" id="pw" autocomplete="${modus==='nieuw'?'new-password':'current-password'}">
+    ${location.protocol==='file:'?`<div class="foutregel">Let op: je opent dit bestand lokaal (file:///). Inloggen werkt alleen als de pagina via https wordt geladen.</div>`:''}
+    ${fout?`<div class="foutregel">${esc(fout)}</div>`:''}
+    <div class="row"><button class="btn" id="inlog">${modus==='nieuw'?'Account maken':'Inloggen'}</button></div>
+    <div class="row"><button class="btn ghost" id="wissel">${modus==='nieuw'?'Ik heb al een account':'Nieuw account maken'}</button></div>
+    <div class="row"><button class="btn ghost" id="test">Verbinding testen</button></div>
+  </div>`;
+  document.getElementById('wissel').onclick = ()=>loginScherm('', modus==='nieuw'?'bestaand':'nieuw');
+  document.getElementById('inlog').onclick = async (ev)=>{
+    const em=document.getElementById('em').value.trim(), pw=document.getElementById('pw').value;
+    if(!em||!pw){ loginScherm('Vul je e-mailadres en wachtwoord in.', modus); return; }
+    ev.target.disabled = true; ev.target.textContent = 'Bezig…';
+    const {data, error} = modus==='nieuw'
+      ? await sb.auth.signUp({email:em, password:pw})
+      : await sb.auth.signInWithPassword({email:em, password:pw});
+    if(error){ loginScherm(vertaalFout(error.message), modus); return; }
+    if(modus==='nieuw' && data && data.user && !data.session){
+      loginScherm('Account aangemaakt. Bevestig eerst de e-mail die je hebt gekregen en log daarna in.', 'bestaand'); return;
+    }
+    start();
+  };
+  document.getElementById('pw').onkeydown = e => { if(e.key==='Enter') document.getElementById('inlog').click(); };
+  document.getElementById('test').onclick = async (ev)=>{
+    ev.target.disabled=true; ev.target.textContent='Testen…';
+    let uitslag;
+    try{
+      const r = await fetch(SUPABASE_URL+'/auth/v1/health', {headers:{apikey:SUPABASE_KEY}});
+      uitslag = r.ok ? 'Verbinding met de database werkt. Het probleem zit dan in je e-mailadres of wachtwoord.'
+                     : 'De server antwoordt met code '+r.status+'. De sleutel of het adres klopt niet.';
+    }catch(err){ uitslag = vertaalFout(err && err.message ? err.message : 'Failed to fetch'); }
+    loginScherm(uitslag, modus);
+  };
+}
+function vertaalFout(m){
+  if(/Failed to fetch|NetworkError|Load failed|fetch/i.test(m)){
+    return location.protocol==='file:'
+      ? 'Je hebt dit bestand lokaal geopend (file:///). Browsers blokkeren dan verbinding met de database. Zet het bestand online, bijvoorbeeld op GitHub Pages, en open het via https.'
+      : 'Geen verbinding met de database. Controleer je internet, en of een adblocker of het netwerk supabase.co blokkeert.';
+  }
+  if(/Invalid login credentials/i.test(m)) return 'E-mailadres of wachtwoord klopt niet.';
+  if(/Password should be at least/i.test(m)) return 'Kies een wachtwoord van minstens 6 tekens.';
+  if(/User already registered/i.test(m)) return 'Er bestaat al een account met dit e-mailadres.';
+  if(/Email not confirmed/i.test(m)) return 'Bevestig eerst de e-mail die je hebt gekregen.';
+  if(/rate limit|too many/i.test(m)) return 'Te veel pogingen. Probeer het over een paar minuten opnieuw.';
+  return m;
+}
+function uitloggen(){ actie(async ()=>{ await sb.auth.signOut(); sessie=null; sluit(); loginScherm('', 'bestaand'); }); }
+
+/* ---------- opbouw ---------- */
+function schil(){
+  document.body.className='';
+  document.getElementById('app').innerHTML = `
+    <div class="wrap"><header><h1 id="hd">Vandaag</h1><span class="st" id="st"></span></header><main id="view"></main></div>
+    <button class="fab" id="fab" aria-label="Opdracht toevoegen">+</button>
+    <nav>
+      <button data-tab="start" class="on"><span>◉</span>Vandaag</button>
+      <button data-tab="agenda"><span>▤</span>Agenda</button>
+      <button data-tab="beheer"><span>⚙</span>Beheer</button>
+    </nav>`;
+  document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+    tab=b.dataset.tab; document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b)); render(); });
+  document.getElementById('fab').onclick = ()=>opdrachtForm();
+}
+
+function render(){
+  const view = document.getElementById('view'); if(!view) return;
+  document.getElementById('hd').textContent = tab==='start' ? 'Vandaag' : tab==='agenda' ? 'Agenda' : 'Beheer';
+  document.getElementById('st').textContent = dowName(today)+' '+dm(today);
+  document.getElementById('fab').style.display = tab==='beheer' ? 'none' : 'block';
+  view.innerHTML = tab==='start' ? renderStart() : tab==='agenda' ? renderAgenda() : renderBeheer();
+}
+
+async function start(){
+  const {data} = await sb.auth.getSession();
+  sessie = data ? data.session : null;
+  if(!sessie){ loginScherm('', 'bestaand'); return; }
+  schil();
+  document.getElementById('view').innerHTML = `<div class="empty">Bezig met laden…</div>`;
+  try{ await laden(); render(); }
+  catch(e){ document.getElementById('view').innerHTML = `<div class="empty"><strong>Kon je gegevens niet ophalen</strong>
+    <p>Controleer je internetverbinding.</p><button class="btn" onclick="herladen()">Opnieuw proberen</button></div>`; }
+}
+
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible' && sessie){
+    const nu = iso(new Date());
+    if(nu!==today){ today=nu; if(agView==='dag') selDay=nu; }
+    herladen(true);
+  }
+});
+
+start();
+</script>
+</body>
+</html>
